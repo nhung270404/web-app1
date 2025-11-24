@@ -1,0 +1,48 @@
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
+import { AppContextProvider } from '@/context/app-context';
+import {IConfig} from "@/models/config.model";
+import { ReactNode } from 'react';
+import { GetConfig } from '@/lib/services/config.service';
+import { ThemeProvider } from '@/components/theme-provider';
+export const dynamic = 'force-dynamic';
+
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  const config: IConfig = await GetConfig();
+  return {
+    title: config.title || 'BaoAn - Lifestyle',
+    description: config.description || 'Powered by NextJS - Author Kot',
+  };
+}
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: ReactNode;
+}>) {
+  const config: IConfig = await GetConfig();
+  return (
+    <html lang="vi" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <Toaster />
+          <AppContextProvider config={config}>
+            {children}
+          </AppContextProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

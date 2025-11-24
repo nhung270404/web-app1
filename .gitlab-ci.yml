@@ -1,0 +1,93 @@
+stages:
+  - build
+  - deploy
+
+.build:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - name: docker:25.0.3-dind
+      alias: thedockerhost
+  variables:
+    DOCKER_HOST: tcp://thedockerhost:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ''
+  before_script:
+    - echo "$DOCKER_REGISTRY_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - cp $ENV .env.production
+    - docker build -t $IMAGE .
+    - docker push $IMAGE
+
+# Job build cho nhánh master
+build:
+  extends: .build
+  only:
+    refs:
+      - master
+
+.deploy:
+  stage: deploy
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@$SERVER "
+      echo "$DOCKER_REGISTRY_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_REGISTRY_USER --password-stdin &&
+      docker stop $CONTAINER || true &&
+      docker rm $CONTAINER || true &&
+      docker image rm $IMAGE || true &&
+      docker pull $IMAGE &&
+      docker run -d --name $CONTAINER --restart=unless-stopped -v /opt/public/baoan:/app/public --network local $IMAGE"
+
+# Job deploy cho nhánh master
+deploy:
+  extends: .deploy
+  only:
+    refs:
+      - master
+
+# Cấu hình chung cho build-dev
+.build-dev:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - name: docker:25.0.3-dind
+      alias: thedockerhost
+  variables:
+    DOCKER_HOST: tcp://thedockerhost:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - echo "$DOCKER_REGISTRY_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - cp $ENV_DEV .env
+    - docker build -t $IMAGE_DEV .
+    - docker push $IMAGE_DEV
+
+# Job build-dev cho nhánh dev/master
+build-dev:
+  extends: .build-dev
+  only:
+    refs:
+      - dev/master
+
+# Cấu hình chung cho deploy-dev
+.deploy-dev:
+  stage: deploy
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@$SERVER "
+      echo "$DOCKER_REGISTRY_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_REGISTRY_USER --password-stdin &&
+      docker stop $CONTAINER_DEV || true &&
+      docker rm $CONTAINER_DEV || true &&
+      docker image rm $IMAGE_DEV || true &&
+      docker pull $IMAGE_DEV &&
+      docker run -d --name $CONTAINER_DEV --restart=always --network local $IMAGE_DEV"
+
+# Job deploy-dev cho nhánh dev/master
+deploy-dev:
+  extends: .deploy-dev
+  only:
+    refs:
+      - dev/master
