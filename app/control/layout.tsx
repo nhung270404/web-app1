@@ -1,9 +1,9 @@
 import { verifyToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import LangLayout from '@/app/control/lang';
 import { ReactNode } from 'react';
 import { IMenuSideBar } from '@/models/menu-sidebar.model';
+import LangLandingLayout from '@/app/control/lang';
 
 export default async function ManLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -41,6 +41,6 @@ export default async function ManLayout({ children }: { children: ReactNode }) {
     ],
   };
   return (
-    <LangLayout payload={payload} menu={MenuSideBar}>{children}</LangLayout>
+    <LangLandingLayout payload={payload} menu={MenuSideBar}>{children}</LangLandingLayout>
   );
 }

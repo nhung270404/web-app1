@@ -7,6 +7,7 @@ import {IConfig} from "@/models/config.model";
 import { ReactNode } from 'react';
 import { GetConfig } from '@/lib/services/config.service';
 import { ThemeProvider } from '@/components/theme-provider';
+import LangLayout from '@/app/lang';
 export const dynamic = 'force-dynamic';
 
 const geistSans = Geist({
@@ -39,7 +40,7 @@ export default async function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Toaster />
           <AppContextProvider config={config}>
-            {children}
+            <LangLayout>{children}</LangLayout>
           </AppContextProvider>
         </ThemeProvider>
       </body>
