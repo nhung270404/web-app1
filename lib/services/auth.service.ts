@@ -9,8 +9,8 @@ export const Login = async (body: {username: string, password: string}) => {
       {
         $or: [{ phone: body.username }, { email: body.username }],
       },
-      { _id: 1, phone: 1, email: 1, role: 1, password: 1 },
-    ).populate('role', { level: 1, title: 1, _id: 0 });
+      { __v: 0 },
+    ).populate('roles', { name: 1 });
     if (rs) user = rs
   } catch (error) {
     console.error('Error fetching user:', error);
