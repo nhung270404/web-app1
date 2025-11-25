@@ -1,25 +1,11 @@
-import type {NextConfig} from 'next';
-import withPWA from 'next-pwa';
-
-const withPWAConfig = withPWA({
-	dest: 'public',
-	register: true,
-	skipWaiting: true,
-	disable: process.env.NODE_ENV === 'development',
-});
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-	output: 'standalone',
-
-	images: {
-		remotePatterns: [
-			{
-				protocol: 'https',
-				hostname: 'w.ladicdn.com',
-				pathname: '/**',
-			},
-		],
-	},
+  /* config options here */
+  output: 'standalone', // cần để chạy tốt trong Docker
+  images: {
+    remotePatterns: [new URL('https://w.ladicdn.com/**')],
+  },
 };
 
-export default withPWAConfig(nextConfig as any);
+export default nextConfig;

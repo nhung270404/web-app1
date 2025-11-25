@@ -139,36 +139,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* Add to your global css or body */
-body {
-  /* Ensure background covers the whole screen */
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-
-  /* Safe area spacing */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
-
-html, body {
-  /* Chặn hành động cuộn nảy, giữ app cố định như Native */
-  overscroll-behavior-y: none;
-
-  /* Ngăn chặn user zoom in/out bằng 2 ngón tay gây vỡ layout */
-  touch-action: pan-x pan-y;
-
-  /* Đảm bảo full chiều cao */
-  height: 100%;
-  width: 100%;
-  overflow: hidden; /* Chỉ scroll ở các thẻ con cần thiết */
-}
-
-/* Nếu bạn có 1 thẻ main container bọc nội dung, hãy cho nó scroll */
-#__next, main {
-  height: 100%;
-  overflow-y: auto; /* Cho phép scroll nội dung bên trong */
-  -webkit-overflow-scrolling: touch; /* Scroll mượt trên iOS */
-}
