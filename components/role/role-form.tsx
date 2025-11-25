@@ -57,7 +57,6 @@ export function RoleForm({ defaultValues, onSuccess }: RoleFormProps) {
       }
       if (onSuccess) {
         form.reset();
-        role._id = role._id ? role._id.toString() : role._id;
         onSuccess(role);
       }
     } catch (error) {
