@@ -1,21 +1,17 @@
-import '@/lib/init';
-import UserModel, {IUser} from '@/models/user.model';
+import {IUser} from '@/models/user.model';
 import jwt from 'jsonwebtoken';
+import {POST_METHOD} from "@/lib/req";
 
 export const Login = async (body: { username: string, password: string }) => {
-	let user: IUser | null = null
+	let user: IUser | undefined
 	try {
-		const username = body.username.toLowerCase()
+		const userName = body.username.toLowerCase()
 			.replace("+84", "0")
-			.replace(/[^\w\s.]/g, '')
+			.replace(/[^\w\s.{@,1}]/g, '')
 			.replace(/\s+/g, '')
-		const rs = await UserModel.findOne(
-			{
-				$or: [{phone: username}, {email: username}],
-			},
-			{__v: 0},
-		).populate('roles', {name: 1});
-		if (rs) user = rs
+		console.log(userName, "username")
+		const rs: IUser = await POST_METHOD("/auth/login", {username: userName, password: body.password});
+		if (rs) user = rs;
 	} catch (error) {
 		console.error('Error fetching user:', error);
 		throw new Error('Failed to fetch user');

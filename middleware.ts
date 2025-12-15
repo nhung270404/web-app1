@@ -1,25 +1,25 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import type {NextRequest} from 'next/server';
+import {NextResponse} from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-  const accessToken = request.cookies.get('accessToken')?.value;
+	const pathname = request.nextUrl.pathname;
+	const accessToken = request.cookies.get('accessToken')?.value;
 
-  const protectedRoutes = ['/control'];
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
+	const protectedRoutes = ['/control'];
+	const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
 
-  if (pathname === '/login' && accessToken) {
-    // Chỉ cần biết có token là redirect
-    return NextResponse.redirect(new URL('/control', request.url));
-  }
+	if (pathname === '/login' && accessToken) {
+		// Chỉ cần biết có token là redirect
+		return NextResponse.redirect(new URL('/control', request.url));
+	}
 
-  if (isProtectedRoute && !accessToken) {
-    return NextResponse.redirect(new URL(`/login?redirect=${request.nextUrl.pathname}`, request.url));
-  }
+	if (isProtectedRoute && !accessToken) {
+		return NextResponse.redirect(new URL(`/login?redirect=${request.nextUrl.pathname}`, request.url));
+	}
 
-  return NextResponse.next();
+	return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/login', '/control/:path*'],
+	matcher: ['/login', '/control/:path*'],
 };
