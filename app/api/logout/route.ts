@@ -1,8 +1,14 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';
 
-export async function GET() {
-  const cc = await cookies();
-  cc.delete('accessToken');
-  redirect('/');
+export async function POST() {
+  const res = NextResponse.json({ success: true });
+
+  res.cookies.set({
+    name: 'accessToken',
+    value: '',
+    path: '/',
+    maxAge: 0,
+  });
+
+  return res;
 }

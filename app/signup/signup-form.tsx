@@ -1,146 +1,148 @@
-'use client'
+'use client';
 
 import { ComponentPropsWithoutRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trans, useTranslation } from 'react-i18next';
-import { signupSchema, SignupSchema } from '@/lib/schemas/signup.schema';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { signupSchema, SignupSchema } from '@/lib/schemas/signup.schema';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import Link from 'next/link';
+import { Facebook } from 'lucide-react';
+import { FcGoogle } from 'react-icons/fc';
 
-export function SignupForm({className, ...props}: ComponentPropsWithoutRef<'div'>) {
+
+
+export function SignupForm({
+                             className,
+                             ...props
+                           }: ComponentPropsWithoutRef<'div'>) {
   const router = useRouter();
-  const {t} = useTranslation();
-
-  // form state (react-hook-form + zod)
-  const form = useForm<SignupSchema>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      firstname: "",
-      lastname: "",
-      email: "",
-      phone: "",
-      password: ""
-    }
-  });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
-  } = form;
+  } = useForm<SignupSchema>({
+    resolver: yupResolver(signupSchema),
+  });
 
-  // API check email / phone tồn tại
-  const checkExists = async (field: "email" | "phone", value: string) => {
-    if (!value) return;
-
-    try {
-      const res = await fetch(`/api/check?field=${field}&value=${value}`);
-      const data = await res.json();
-
-      if (data.exists) {
-        setError(field, {
-          type: "manual",
-          message: field === "email" ? "Email đã tồn tại" : "Số điện thoại đã tồn tại"
-        });
-      }
-    } catch (e) {
-      console.error("Check failed", e);
-    }
-  };
-
-  // Submit handler
   const onSubmit = async (data: SignupSchema) => {
-    try {
-      await fetch("/api/signup", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+    await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-      router.push("/login");
-    } catch (err) {
-      console.error(err);
-    }
+    router.push('/login');
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">{t("i_signup")}</CardTitle>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-center text-2xl font-bold text-blue-600">
+            Đăng ký
+          </CardTitle>
 
-          <CardDescription>
-            <Trans
-              i18nKey="i_signup_desc"
-              components={{
-                1: <Link href="/login" className="text-primary underline" />
-              }}
-            />
-          </CardDescription>
+          <p className="text-center text-sm text-muted-foreground">
+            Đã có tài khoản?{' '}
+            <Link
+              href="/login"
+              className="font-medium text-primary underline transition-colors hover:text-blue-600"
+            >
+              Đăng nhập
+            </Link>
+          </p>
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-            {/* Firstname */}
-            <div className="grid gap-2">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
+          >
+            <div>
               <Label>Họ</Label>
-              <Input {...register("firstname")} />
-              {errors.firstname && (
-                <p className="text-red-500 text-sm">{errors.firstname.message}</p>
-              )}
+              <Input {...register('firstname')} className="mt-2"/>
+              {errors.firstname &&
+                <p className="text-sm text-red-500">
+                  {errors.firstname.message}
+                </p>}
             </div>
 
-            {/* Lastname */}
-            <div className="grid gap-2">
+            <div>
               <Label>Tên</Label>
-              <Input {...register("lastname")} />
-              {errors.lastname && (
-                <p className="text-red-500 text-sm">{errors.lastname.message}</p>
-              )}
+              <Input {...register('lastname')} className="mt-2"/>
+              {errors.lastname &&
+                <p className="text-sm text-red-500">
+                  {errors.lastname.message}
+                </p>}
             </div>
 
-            {/* Email (optional) */}
-            <div className="grid gap-2">
+            <div>
               <Label>Email (không bắt buộc)</Label>
-              <Input
-                {...register("email")}
-                onBlur={(e) => checkExists("email", e.target.value)}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
+              <Input {...register('email')} className="mt-2"/>
+              {errors.email &&
+                <p className="text-sm text-red-500">
+                  {errors.email.message}
+                </p>}
             </div>
 
-            {/* Phone */}
-            <div className="grid gap-2">
+            <div>
               <Label>Số điện thoại</Label>
-              <Input
-                {...register("phone")}
-                onBlur={(e) => checkExists("phone", e.target.value)}
-              />
-              {errors.phone && (
-                <p className="text-red-500 text-sm">{errors.phone.message}</p>
-              )}
+              <Input {...register('phone')} className="mt-2"/>
+              {errors.phone &&
+                <p className="text-sm text-red-500">
+                  {errors.phone.message}
+                </p>}
             </div>
 
-            {/* Password */}
-            <div className="grid gap-2">
+            <div>
               <Label>Mật khẩu</Label>
-              <Input type="password" {...register("password")} />
-              {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password.message}</p>
-              )}
+              <Input type="password" {...register('password')} className="mt-2"/>
+              {errors.password &&
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>}
+            </div>
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              Đăng ký
+            </Button>
+            <div className="flex items-center gap-3 my-4">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted-foreground">
+    Hoặc đăng ký bằng
+  </span>
+              <div className="h-px flex-1 bg-border" />
             </div>
 
-            <Button type="submit" className="w-full">
-              {t("i_signup")}
-            </Button>
+            {/* Social register */}
+            <div className="flex gap-3">
+              {/* Google */}
+              <button
+                type="button"
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-muted"
+              >
+                <FcGoogle className="h-5 w-5" />
+                Google
+              </button>
+
+              <button
+                type="button"
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#1877F2] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#166FE5]"
+              >
+                <Facebook className="h-5 w-5" />
+                Facebook
+              </button>
+            </div>
           </form>
         </CardContent>
       </Card>
