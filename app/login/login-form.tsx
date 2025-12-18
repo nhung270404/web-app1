@@ -57,8 +57,6 @@ export function LoginForm({
 		}
 	};
 
-
-
 	return (
 		<div className={cn('flex flex-col gap-6', className)} {...props}>
 			<Card>
@@ -82,15 +80,6 @@ export function LoginForm({
 				<CardContent>
 					<form onSubmit={handleSubmit}>
 						<div className="flex flex-col gap-6">
-							{/*<div className="grid gap-4">*/}
-							{/*	<Label>{t('i_phone_or_email')}</Label>*/}
-							{/*	<Input*/}
-							{/*		value={username}*/}
-							{/*		onChange={(e) => setUsername(e.target.value)}*/}
-							{/*		required*/}
-							{/*	/>*/}
-							{/*</div>*/}
-
 							<div className="grid gap-2">
 								<Label>{t('i_phone_or_email')}</Label>
 
@@ -108,15 +97,6 @@ export function LoginForm({
 									/>
 								</div>
 							</div>
-							{/*<div className="grid gap-4">*/}
-							{/*	<Label>{t('i_password')}</Label>*/}
-							{/*	<Input*/}
-							{/*		type="password"*/}
-							{/*		value={password}*/}
-							{/*		onChange={(e) => setPassword(e.target.value)}*/}
-							{/*		required*/}
-							{/*	/>*/}
-							{/*</div>*/}
 
 							<div className="grid gap-2">
 								<Label>{t('i_password')}</Label>
